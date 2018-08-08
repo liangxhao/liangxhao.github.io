@@ -1,0 +1,1232 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Reinforcement learning: an introduction,增强学习," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="流裳照影" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Reinforcement learning : an introduction(Second Edition). 读书笔记
+本章将蒙特卡洛方法和单步时序差分算法统一起来给出了更为一般的方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Chapter 7: Multi-step Bootstrapping">
+<meta property="og:url" content="http://liangxhao.com/2017/06/26/Chapter-7-Multi-step-Bootstrapping/index.html">
+<meta property="og:site_name" content="流裳照影">
+<meta property="og:description" content="Reinforcement learning : an introduction(Second Edition). 读书笔记
+本章将蒙特卡洛方法和单步时序差分算法统一起来给出了更为一般的方法。">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_7.1_0.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_7.1_1.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_7.2_0.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_7.2_1.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_7.3_0.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_7.4_0.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_7.4_1.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_7.4_2.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_7.5_0.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_7.5_1.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_7.5_2.jpg">
+<meta property="og:updated_time" content="2017-06-26T08:34:21.721Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chapter 7: Multi-step Bootstrapping">
+<meta name="twitter:description" content="Reinforcement learning : an introduction(Second Edition). 读书笔记
+本章将蒙特卡洛方法和单步时序差分算法统一起来给出了更为一般的方法。">
+<meta name="twitter:image" content="http://liangxhao.com/images/rl_book/rl_7.1_0.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://liangxhao.com/2017/06/26/Chapter-7-Multi-step-Bootstrapping/"/>
+
+
+
+
+
+  <title> Chapter 7: Multi-step Bootstrapping | 流裳照影 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f8a89cc8096713b945145412bc6947a4";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">流裳照影</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的愿望是在白天走路</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocapitalize="off" autocomplete="off" autocorrect="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://liangxhao.com/2017/06/26/Chapter-7-Multi-step-Bootstrapping/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="liangxhao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="流裳照影">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Chapter 7: Multi-step Bootstrapping
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-26T16:30:00+08:00">
+                2017-06-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/读书笔记/" itemprop="url" rel="index">
+                    <span itemprop="name">读书笔记</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017/06/26/Chapter-7-Multi-step-Bootstrapping/" class="leancloud_visitors" data-flag-title="Chapter 7: Multi-step Bootstrapping">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Reinforcement learning : an introduction(Second Edition). 读书笔记</p>
+<p>本章将蒙特卡洛方法和单步时序差分算法统一起来给出了更为一般的方法。</p>
+<a id="more"></a>
+<p>前两章所讲的是时序差分学习方法（TD）和蒙特卡洛方法（MC），其中one-step TD方法是走一步就更新估计值，MC方法是走完所有的步才更新估计值，本章将one-step TD扩展到multi-step TD的情况，走n步后更新估计值。</p>
+<p>one-step方法每次更新的时间间隔相同，实际中我们可能需要根据状态改变的缓慢来调整value更新频率，multi-step可以实现在更长的时间间隔内更新。</p>
+<h4 id="n-step-td-预测">n-step TD 预测</h4>
+<p>TD方法中的value在<span class="math inline">\(t\)</span>时刻之后经过<span class="math inline">\(n\)</span>步再更新的方法叫n-step TD。</p>
+<p>考虑one-step TD和MC方法的backup diagram，可以扩展到<span class="math inline">\(n\)</span>步的情况，如下图：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_7.1_0.jpg" alt="figure 1">
+<p class="caption">figure 1</p>
+</div>
+<p>根据前两章one-step TD和MC的回报<span class="math inline">\(G_t\)</span>的形式，可以扩展写出<span class="math inline">\(n\)</span>步情况下的形式： <span class="math display">\[
+G_{t}^{\left( n \right)}=R_{t+1}+\gamma R_{t+2}+\cdot \cdot \cdot +\gamma ^{n-1}R_{t+n}+\gamma ^nV_{t+n-1}\left( S_{t+n} \right)
+\]</span> 其中<span class="math inline">\(n\ge 1,0\le t\le T-n\)</span>，当<span class="math inline">\(t+n\ge T\)</span>，即n-step的回报超过终止状态时，多余部分的reward记为0，也就是说<span class="math inline">\(G_{t}^{\left( n \right)}=G_t\)</span>。</p>
+<p>此时就可以按照相同的方法立刻写出更新公式： <span class="math display">\[
+V_{t+n}\left( S_t \right) =V_{t+n-1}\left( S_t \right) +\alpha \left[ G_{t}^{\left( n \right)}-V_{t+n-1}\left( S_t \right) \right]
+\]</span> <em>error reduction property</em>，n-step的期望回报值小于<span class="math inline">\(\gamma^n\)</span>倍的<span class="math inline">\(V_{t+n-1}\)</span>，保证了<span class="math inline">\(V\)</span>在合适的条件下一定能收敛。</p>
+<p>算法伪代码如下：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_7.1_1.jpg" alt="figure 2">
+<p class="caption">figure 2</p>
+</div>
+<h4 id="n-step-sarsa">n-step Sarsa</h4>
+<p>n-step方法也可以应用到控制问题中，例如Sarsa算法。</p>
+<p>利用行为值写出n-step的回报值，如下： <span class="math display">\[
+G_{t}^{\left( n \right)}=R_{t+1}+\gamma R_{t+2}+\cdot \cdot \cdot +\gamma ^{n-1}R_{t+n}+\gamma ^nQ_{t+n-1}\left( S_{t+n},A_{t+n} \right)
+\]</span> 其更新公式自然可以写出： <span class="math display">\[
+Q_{t+n}\left( S_t,A_t \right) =Q_{t+n-1}\left( S_t,A_t \right) +\alpha \left[ G_{t}^{\left( n \right)}-Q_{t+n-1}\left( S_t,A_t \right) \right]
+\]</span> Expected Sarsa也可以推广过来，只需在最后<span class="math inline">\(G_{t}^{\left( n \right)}\)</span>最后一项<span class="math inline">\(Q\)</span>改为期望值即可，即： <span class="math display">\[
+G_{t}^{\left( n \right)}=R_{t+1}+\gamma R_{t+2}+\cdot \cdot \cdot +\gamma ^{n-1}R_{t+n}+\gamma ^n\sum_a{\pi \left( a|S_{t+n} \right)}Q_{t+n-1}\left( S_{t+n},a \right) 
+\]</span> 它们的backup diagram如下：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_7.2_0.jpg" alt="figure 3">
+<p class="caption">figure 3</p>
+</div>
+<p>算法伪代码如下：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_7.2_1.jpg" alt="figure 4">
+<p class="caption">figure 4</p>
+</div>
+<h4 id="重要性采样下的n-step-off-policy">重要性采样下的n-step Off-policy</h4>
+<p>使用重要性采样的Off-policy方法也可以推广到n-step中。</p>
+<p>其中重要性比率（importance sampling ratio）为如下形式： <span class="math display">\[
+\rho _{t}^{t+n}=\prod_{k=t}^{\min \left( t+n-1,T \right)}{\frac{\pi \left( A_k|S_k \right)}{\mu \left( A_k|S_k \right)}}
+\]</span> 相当于从<span class="math inline">\(t\)</span>到<span class="math inline">\(t+n-1\)</span>时刻的action都是采样而来的。</p>
+<p>则可以简单的用<span class="math inline">\(\rho\)</span>作为权重，给出状态价值<span class="math inline">\(V\)</span>的更新公式如下： <span class="math display">\[
+V_{t+n}\left( S_t \right) =V_{t+n-1}\left( S_t \right) +\alpha \rho _{t}^{t+n}\left[ G_{t}^{\left( n \right)}-V_{t+n-1}\left( S_t \right) \right] 
+\]</span> 行为价值<span class="math inline">\(Q\)</span>的更新公式（即n-step Sarsa）如下： <span class="math display">\[
+Q_{t+n}\left( S_t,A_t \right) =Q_{t+n-1}\left( S_t,A_t \right) +\alpha \rho _{t+1}^{t+n}\left[ G_{t}^{\left( n \right)}-Q_{t+n-1}\left( S_t,A_t \right) \right]
+\]</span></p>
+<p>注意这里的<span class="math inline">\(\rho\)</span>是从<span class="math inline">\(t+1\)</span>时刻开始。即<span class="math inline">\(t\)</span>时刻的action是我们所要计算的，而不是采样而来的。</p>
+<p>对于n-step Expected Sarsa来说，在最后一步用行为价值的期望替换了采样值，所以这里的<span class="math inline">\(\rho _{t+1}^{t+n}\)</span>要改为<span class="math inline">\(\rho _{t+1}^{t+n-1}\)</span>。</p>
+<p>算法的伪代码如下：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_7.3_0.jpg" alt="figure 5">
+<p class="caption">figure 5</p>
+</div>
+<h4 id="不需要重要性采样的off-policy-n-step-tree-backup算法">不需要重要性采样的Off-policy: n-step Tree Backup算法</h4>
+<p>Q-learning和Expected Sarsa都可以在one-step的情况下不需要重要性采样而实现Off-policy，对于n-step的情况该如何做呢？</p>
+<p>这里给出一种tree-backup 的算法，如图是一个3-step backup diagram，这里以此为例进行说明。</p>
+<div class="figure">
+<img src="/images/rl_book/rl_7.4_0.jpg" alt="figure 6">
+<p class="caption">figure 6</p>
+</div>
+<p>它是从一个action出发的state序列，每个state都要考虑它所有的action，策略<span class="math inline">\(\pi\)</span>和行为价值。其中被选中的那个action需要特殊考虑，因为产生了下一个状态的样本，所以它不需要bootstrap。</p>
+<p>每个不被选中的action需要用目标策略<span class="math inline">\(\pi\)</span>的概率来加权它的行为价值，而那个被选中的action则需要对它产生的整个子树进行加权。</p>
+<p>定义目标策略下的行为价值的期望值为： <span class="math display">\[
+V_t=\sum_a{\pi \left( a|S_t \right)}Q_{t-1}\left( S_t,a \right)
+\]</span> TD error定义为： <span class="math display">\[
+\delta _t=R_{t+1}+\gamma V_{t+1}-Q_{t-1}\left( S_t,A_t \right)
+\]</span> 则n-step的回报可写出如下公式：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_7.4_1.jpg" alt="figure 7">
+<p class="caption">figure 7</p>
+</div>
+<p>式子中，由于V中多加了被选中action的那部分，所以在随后被减掉。</p>
+<p><span class="math inline">\(Q\)</span>的更新公式和n-step Sarsa的相同。</p>
+<p>算法外代码如下：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_7.4_2.jpg" alt="figure 8">
+<p class="caption">figure 8</p>
+</div>
+<h4 id="一个统一的算法n-step-qσ">一个统一的算法：n-step Q(σ)</h4>
+<p>到目前为止，我们已经介绍了三种backup diagrams。n-step Sarsa算法的每一步都是采样转换，tree-backup 算法每一个分支都是状态-行为值转换，而n-step Expected Sarsa的最后一步是状态-行为转换，其它都是采样转换。</p>
+<p>我们可以将这些情况统一起来，<span class="math inline">\(\sigma=0\)</span>表示纯的期望值（状态行为转换），<span class="math inline">\(\sigma=1\)</span>表示采样转换。如下图：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_7.5_0.jpg" alt="figure 9">
+<p class="caption">figure 9</p>
+</div>
+<p>其中<span class="math inline">\(\rho\)</span>表示在Off-policy的条件下，该处的转换需要重要性采样实现。</p>
+<p>n-step Sarsa的回报可以写成依靠TD error的形式： <span class="math display">\[
+G_{t}^{\left( n \right)}=Q_{t-1}\left( S_t,A_t \right) +\sum_{k=t}^{\min \left( t+n-1,T-1 \right)}{\gamma ^{k-t}}\left[ R_{k+1}+\gamma Q_k\left( S_{k+1},A_{k+1} \right) -Q_{k-1}\left( S_k,A_k \right) \right] 
+\]</span> TD error可以写成带<span class="math inline">\(\sigma\)</span>的形式： <span class="math display">\[
+\delta _t=R_{t+1}+\gamma \left[ \sigma _{t+1}Q_t\left( S_{t+1},A_{t+1} \right) +\left( 1-\sigma _{t+1} \right) V_{t+1} \right] -Q_{t-1}\left( S_t,A_t \right) 
+\]</span> 由此可以定义n-step回报值：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_7.5_1.jpg" alt="figure 10">
+<p class="caption">figure 10</p>
+</div>
+<p>对于Off-policy，重要性采样比率被定义为： <span class="math display">\[
+\rho _{t}^{t+n}=\prod_{k=t}^{\min \left( t+n-1,T-1 \right)}{\left( \sigma _k\frac{\pi \left( A_k|S_k \right)}{\mu \left( A_k|S_k \right)}+1-\sigma _k \right)}
+\]</span> 算法伪代码如下：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_7.5_2.jpg" alt="figure 11">
+<p class="caption">figure 11</p>
+</div>
+
+      
+    </div>
+
+    <div>
+    
+      
+<div style="text-align:center;color: #ccc;font-size:14px;">
+------ 本文结束 ------
+</div>
+<br/>
+<div style="border: 1px solid black">
+<div style="margin-left:10px">
+<span style="font-weight:blod">版权声明</span>
+<p style="font-size: 15px;line-height: 30px">
+本文为博主原创，欢迎转载分享，只需注明作者与出处。
+<a href="http://liangxhao.com" style="color:#258FC6">http://liangxhao.com</a>
+</p>
+</div>
+</div>
+
+    
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechat.png" alt="liangxhao WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.png" alt="liangxhao Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Reinforcement-learning-an-introduction/" rel="tag"># Reinforcement learning: an introduction</a>
+          
+            <a href="/tags/增强学习/" rel="tag"># 增强学习</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/06/26/Chapter-6-Temporal-Difference-Learning/" rel="next" title="Chapter 6: Temporal-Difference Learning">
+                <i class="fa fa-chevron-left"></i> Chapter 6: Temporal-Difference Learning
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="uyan_frame"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="liangxhao" />
+          <p class="site-author-name" itemprop="name">liangxhao</p>
+           
+              <p class="site-description motion-element" itemprop="description">读书笔记,机器学习,人工智能,深度学习,增强学习</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/lianggreathao" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#n-step-td-预测"><span class="nav-number">1.</span> <span class="nav-text">n-step TD 预测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#n-step-sarsa"><span class="nav-number">2.</span> <span class="nav-text">n-step Sarsa</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重要性采样下的n-step-off-policy"><span class="nav-number">3.</span> <span class="nav-text">重要性采样下的n-step Off-policy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不需要重要性采样的off-policy-n-step-tree-backup算法"><span class="nav-number">4.</span> <span class="nav-text">不需要重要性采样的Off-policy: n-step Tree Backup算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#一个统一的算法n-step-qσ"><span class="nav-number">5.</span> <span class="nav-text">一个统一的算法：n-step Q(σ)</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liangxhao</span>
+</div>
+
+<div>
+ 鲁ICP备17028501号
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    
+
+    
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2131413"></script>
+      <!-- UY END -->
+    
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Mc0haSU7SydxhfVvyRc1sNB2-gzGzoHsz", "4qWjMvcerWNq94Y7alHLuWQ9");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+</body>
+</html>

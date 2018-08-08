@@ -1,0 +1,1239 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Reinforcement learning: an introduction,增强学习," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="流裳照影" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Reinforcement learning : an introduction(Second Edition). 读书笔记
+本章介绍了在没有环境模型的条件下用来估计策略的蒙特卡洛方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Chapter 5: Monte Carlo Methods">
+<meta property="og:url" content="http://liangxhao.com/2017/06/26/Chapter-5-Monte-Carlo-Methods/index.html">
+<meta property="og:site_name" content="流裳照影">
+<meta property="og:description" content="Reinforcement learning : an introduction(Second Edition). 读书笔记
+本章介绍了在没有环境模型的条件下用来估计策略的蒙特卡洛方法。">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_5.1_0.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_5.1_1.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_5.3_0.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_5.3_1.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_5.4_0.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_5.6_0.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_5.7_0.jpg">
+<meta property="og:updated_time" content="2017-06-26T09:47:08.820Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chapter 5: Monte Carlo Methods">
+<meta name="twitter:description" content="Reinforcement learning : an introduction(Second Edition). 读书笔记
+本章介绍了在没有环境模型的条件下用来估计策略的蒙特卡洛方法。">
+<meta name="twitter:image" content="http://liangxhao.com/images/rl_book/rl_5.1_0.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://liangxhao.com/2017/06/26/Chapter-5-Monte-Carlo-Methods/"/>
+
+
+
+
+
+  <title> Chapter 5: Monte Carlo Methods | 流裳照影 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f8a89cc8096713b945145412bc6947a4";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">流裳照影</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的愿望是在白天走路</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocapitalize="off" autocomplete="off" autocorrect="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://liangxhao.com/2017/06/26/Chapter-5-Monte-Carlo-Methods/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="liangxhao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="流裳照影">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Chapter 5: Monte Carlo Methods
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-26T16:20:00+08:00">
+                2017-06-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/读书笔记/" itemprop="url" rel="index">
+                    <span itemprop="name">读书笔记</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017/06/26/Chapter-5-Monte-Carlo-Methods/" class="leancloud_visitors" data-flag-title="Chapter 5: Monte Carlo Methods">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Reinforcement learning : an introduction(Second Edition). 读书笔记</p>
+<p>本章介绍了在没有环境模型的条件下用来估计策略的蒙特卡洛方法。</p>
+<a id="more"></a>
+<p>上一章通过动态规划能够解决已知environment（即已知转移矩阵与reward函数）的MDP问题，根据是否已知policy可划分成prediction和control问题。</p>
+<p>但是很多问题中environment是未知的，既不知道做了某个action之后会变到哪一个state，也不知道选择哪个action更好，也就是不知道environment的model是什么，在这种情况下需要解决的问题就是<strong>Model-free prediction</strong>和<strong>Model-free control</strong>。</p>
+<p>显然这种新的问题只能从与environment的交互得到的experience中获取信息。</p>
+<p>蒙特卡洛方法仅需要<strong>经验</strong>——与实际或者模拟环境进行交互的状态、行为和奖励的样本序列。</p>
+<p>从<strong>实际环境</strong>中学习不需要事先了解环境的状态，仍然可以获得最优的行为。</p>
+<p>从<strong>模拟环境</strong>中学习需要一个模型生成样本序列，然而上一章的DP算法则需要完整的概率分布。 在很多情况下，很容易根据概率分布来生成样本，而明确形式的概率分布却很难得到。</p>
+<p>蒙特卡洛方法依靠样本回报的平均值来解决增强学习问题。</p>
+<p>为了确保有明确的回报可用，这里定义蒙特卡洛方法仅用于情景性任务<strong>episode</strong>，情景完成时，价值估计和策略才会改变。</p>
+<h4 id="蒙特卡洛预测">蒙特卡洛预测</h4>
+<p>首先计算策略估计（prediction问题），即计算在给定策略下的状态-价值函数。</p>
+<p>一个显然的方法是，计算该状态之后回报的平均值，随着观测次数 的增多，平均值应收敛于期望值，这是所有蒙特卡洛方法的基础。</p>
+<p>假设我们估计的是 <span class="math inline">\(v_{\pi}\)</span>$ ( s ) $</p>
+<p>在一个情景episode下，每次出现状态<span class="math inline">\(s​\)</span>，称为一个对<span class="math inline">\(s​\)</span>的访问（visit），当然在同一个情景下 <span class="math inline">\(s​\)</span> 可能会被访问多次，对<span class="math inline">\(s​\)</span>的第一次访问称为<em>first visit</em>。</p>
+<ul>
+<li><p><em>first-visit</em> MC：使用episodes中第一次对 <span class="math inline">\(s\)</span> 访问所得到的回报平均值来估计<span class="math inline">\(v_{\pi}\)</span>$( s ) $.</p></li>
+<li><p><em>every-visit</em> MC：使用episodes中所有对 <span class="math inline">\(s\)</span> 访问后的回报平均值来估计<span class="math inline">\(v_{\pi}\)</span>$( s ) $.</p></li>
+</ul>
+<p>其中<em>every-visit</em>方法后面再讲，<em>first-visit</em> MC的算法流程如下图。</p>
+<div class="figure">
+<img src="/images/rl_book/rl_5.1_0.jpg" alt="figure 1">
+<p class="caption">figure 1</p>
+</div>
+<p>例子：<strong>Blackjack</strong>游戏</p>
+<p>与DP表达出所有可能的概率转换的backup diagram不同，蒙特卡洛的backup diagram只有情景任务的一个样本序列。episode需要执行到终止状态才能进行一次更新。</p>
+<div class="figure">
+<img src="/images/rl_book/rl_5.1_1.jpg" alt="figure 2">
+<p class="caption">figure 2</p>
+</div>
+<h4 id="蒙特卡洛估计行为值">蒙特卡洛估计行为值</h4>
+<p>除了状态-价值函数，还要估计行为-价值函数，这样才能从中选择出一个获得最大回报的行为。这和上一章DP算法中的做法是类似的。</p>
+<p>假设我们估计的是 $q_{}( s,a ) $ ，所以这里需要考虑的是状态-行为对 <em>state–action pair</em> <span class="math inline">\((s,a)\)</span>。</p>
+<p>同样存在两种方法：<em>first-visit</em> MC和<em>every-visit</em> MC</p>
+<p>问题是，可能有很多状态-行为对没有被访问过。如果<span class="math inline">\(\pi\)</span>是一个确定性的策略，那么在每个状态下只有一个行为，其它的行为将不被访问到。这个问题属于<em>maintaining exploration</em>问题，可用如下方法解决。</p>
+<p><em>exploring starts</em>方法：使情景以一个<em>state–action pair</em>开始。在情景开始时，每个<em>state–action pair</em>都有非零的概率被选择到。</p>
+<p>当然上述方法不是一直有效的，尤其是在实际环境中，我们可能没法选择起始条件。</p>
+<h4 id="蒙特卡洛控制">蒙特卡洛控制</h4>
+<p>和上一章一样，这里广义策略迭代（generalized policy iteration）是解决这类最优策略问题的一般方法。这里不再赘述。</p>
+<div class="figure">
+<img src="/images/rl_book/rl_5.3_0.jpg" alt="figure 3">
+<p class="caption">figure 3</p>
+</div>
+<p><span class="math display">\[
+\pi_0 \xrightarrow{E} v_{\pi_0} \xrightarrow{I} \pi_1 \xrightarrow{E} v_{\pi_1} \xrightarrow{I} \pi_2 \xrightarrow{E} \cdots \xrightarrow{I} \pi_* \xrightarrow{E} v_*
+\]</span></p>
+<p>这与上一章DP算法类似，实现的过程中有两种方案。一种类似于策略迭代，在每轮的策略估计中都尽可能逼近<span class="math inline">\(q_{\pi _k}\)</span>，但这需要非常多的情景才能收敛到期望值；另一种类似于价值迭代，在策略估计未完成之时就就行策略提升，其中<em>in place</em>就是一种极端的方法。</p>
+<p>ES版本的蒙特卡洛方法算法流程如下图：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_5.3_1.jpg" alt="figure 4">
+<p class="caption">figure 4</p>
+</div>
+<h4 id="不使用es的蒙特卡洛控制">不使用ES的蒙特卡洛控制</h4>
+<p>为了去掉exploring starts这个实际中不现实的假设，唯一的方法就是确保每个action可以被无限次的选择到。</p>
+<p>有两种可选的方法：<strong><em>on-policy</em></strong>、<strong><em>off-policy</em></strong></p>
+<ul>
+<li><em>on-policy</em>估计和提高策略所使用的数据来自于该策略本身</li>
+<li><em>off-policy</em>估计和提高策略所使用的数据来自于其它策略</li>
+</ul>
+<p>其实带有ES假设的方法也属于on-policy，下面去掉该假设。</p>
+<p><em>on-policy</em>控制方法一般都是柔性的（<strong><em>soft</em></strong>），意味着对于每个<span class="math inline">\(s\in \mathcal{S}\)</span> 以及 <span class="math inline">\(a\in \mathcal{A}\)</span><span class="math inline">\((s)\)</span> ，都有 <span class="math inline">\(\pi \left( a|s \right) &gt;0\)</span> 来解决这个问题。</p>
+<p>例如第二章提到的<span class="math inline">\(\epsilon\)</span><em>-greedy</em>策略就是<em>soft</em>的一个特例，选择action时有<span class="math inline">\(\epsilon\)</span>的概率任意选择某个策略，而非总是选择当前最大回报的策略。这样在非贪婪时每个action被选择的最小概率是<span class="math inline">\(\frac{\epsilon}{\left| \mathcal{A}\left( s \right) \right|}\)</span>，其中贪婪的那个action被选中的概率是<span class="math inline">\(1-\epsilon +\frac{\epsilon}{\left| \mathcal{A}\left( s \right) \right|}\)</span>。下面是该算法的流程：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_5.4_0.jpg" alt="figure 5">
+<p class="caption">figure 5</p>
+</div>
+<p>该方法的简要证明过程见原书。</p>
+<h4 id="重要性采样下的off-policy预测">重要性采样下的off-policy预测</h4>
+<p>所有的控制学习方法都面临着同一个矛盾：它们的目标是最终选择最优的行为，但是为了探索哪些是最优的，又不能总是选择那些当前看起来是最优的。</p>
+<p>上一节的on-policy采用<em>near-optimal policy</em>这个接近最优的方法来解决该问题，而off-policy则更直接的采用两个策略：<strong><em>behavior policy</em></strong>和<strong><em>target policy</em></strong></p>
+<ul>
+<li><p><em>behavior policy</em>：行为策略，用来生成数据，做出更多的探索</p></li>
+<li><p><em>target policy</em>：目标策略，我们最终要学习的那个最优策略</p></li>
+</ul>
+<p>off-policy比on-policy复杂，具有更高的方差，优化比较慢，但是它更强大，更具有通用性。on-policy也可以看作是off-policy的行为策略和目标策略相同下的特殊情况。</p>
+<p>这里用<span class="math inline">\(\mu\)</span>和<span class="math inline">\(\pi\)</span>分别代表行为策略和目标策略。</p>
+<p>为了使用<span class="math inline">\(\mu\)</span>来估计<span class="math inline">\(\pi\)</span>，必须要保证<span class="math inline">\(\pi\)</span>下选择的action，在<span class="math inline">\(\mu\)</span>下也会被选择到，即<span class="math inline">\(\pi \left( a|s \right) &gt;0\)</span>成立时<span class="math inline">\(\mu \left( a|s \right) &gt;0\)</span>也要成立，这称为优化假设。<span class="math inline">\(\mu\)</span>是随机的、更具有探索性的，而<span class="math inline">\(\pi\)</span>是确定具有贪婪性的策略。</p>
+<p><em>off-policy</em>一般通过重要性采样（<em>importance sampling</em>）来实现，它是通过一个样本分布估计另一个样本分布期望值的方法。</p>
+<p>产生状态-行为值的轨迹子序列（<em>subsequent state–action trajectory</em>）<span class="math inline">\(A_t,S_{t+1},A_{t+1},...,S_T\)</span>的策略<span class="math inline">\(\pi\)</span>的概率是 <span class="math display">\[
+\prod_{k=t}^{T-1}{\pi \left( A_k|S_k \right)}p\left( S_{k+1}|S_k,A_k \right)
+\]</span> 目标策略与行为策略的概率比值，即<em>importance-sampling ratio</em>为： <span class="math display">\[
+\rho _{t}^{T}=\frac{\prod\limits_{k=t}^{T-1}{\pi \left( A_k|S_k \right) p\left( S_{k+1}|S_k,A_k \right)}}{\prod\limits_{k=t}^{T-1}{\mu \left( A_k|S_k \right) p\left( S_{k+1}|S_k,A_k \right)}}=\sum_{k=t}^{T-1}{\frac{\pi \left( A_k|S_k \right)}{\mu \left( A_k|S_k \right)}}
+\]</span> 重要性采样这个比值作为回报的加权值来估计价值函数。它仅仅用到两个策略的比值，并没有完全用到MDP。</p>
+<p>假设有很多episode样本。将它们按顺序接在一块，例如第一个场景在时刻100结束，那第二个场景就在时刻101开始。</p>
+<p><span class="math inline">\(\mathfrak{J}\)</span>$ ( s ) $ 表示所有访问状态<span class="math inline">\(s\)</span>的时刻集合，$T( t ) $ 表示时刻<span class="math inline">\(t\)</span>的终止状态时刻，<span class="math inline">\(G_t\)</span> 表示从<span class="math inline">\(t\)</span>到 $T( t ) $ 的回报。</p>
+<p>有两种估计价值的方法：</p>
+<p>一种是一般性的方法<em>ordinary importance sampling</em>： <span class="math display">\[
+V\left( s \right) =\frac{\sum_{t\in \mathcal{J}\left( s \right)}{\rho _{t}^{T\left( t \right)}G_t}}{\left| \mathcal{J}\left( s \right) \right|}
+\]</span> 另一种带权值的方法是weighted importance sampling： <span class="math display">\[
+V\left( s \right) =\frac{\sum_{t\in \mathcal{J}\left( s \right)}{\rho _{t}^{T\left( t \right)}G_t}}{\sum_{t\in \mathcal{J}\left( s \right)}{\rho _{t}^{T\left( t \right)}}}
+\]</span> 一般性的方法是无偏估计，但是方差是无界的。带权值的方法具有低方差性，效果更好。</p>
+<h4 id="增量实现">增量实现</h4>
+<p>带权值的方法改写成如下形式： <span class="math display">\[
+V_n=\frac{\sum\limits_{k=1}^{n-1}{W_k}G_k}{\sum\limits_{k=1}^{n-1}{W_k}}
+\]</span> 则可以在每个场景结束后通过增量更新的方式实现： <span class="math display">\[
+V_{n+1}=V_n+\frac{W_n}{C_n}\left[ G_n-V_n \right]
+\]</span> 其中$C_{n+1}=C_n+W_{n+1} $</p>
+<p>由此可以总结算法流程如下：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_5.6_0.jpg" alt="figure 6">
+<p class="caption">figure 6</p>
+</div>
+<h4 id="off-policy蒙特卡洛控制">Off-Policy蒙特卡洛控制</h4>
+<p>对于GPI这里不再赘述，直接给出流程，得到最优策略。</p>
+<div class="figure">
+<img src="/images/rl_book/rl_5.7_0.jpg" alt="figure 7">
+<p class="caption">figure 7</p>
+</div>
+<h4 id="特定回报值的重要性采样">特定回报值的重要性采样</h4>
+<p>上面所讲的方法仅仅对回报值进行加权处理，完全没有考虑回报值的内部结构，例如奖励的折扣率。</p>
+<p>通过考虑这些问题可以减少off-policy估计的方差，这都还是当前比较前沿的研究。</p>
+<p>例如episodes很长，而折扣 <span class="math inline">\(\gamma\)</span> 远小于1。具体来说场景有100个时刻之长，而 <span class="math inline">\(\gamma =0\)</span> ，那么 <span class="math inline">\(G_0=R_1\)</span> ，则 <span class="math inline">\(\rho\)</span> 的连乘形式中，只有第一项 <span class="math inline">\(\frac{\pi \left( A_0|S_0 \right)}{\mu \left( A_0|S_0 \right)}\)</span> 与回报值有关，其它因子是完全独立的，而且期望值为1。</p>
+<p>解决这个问题的一种方法是使用<em>flat partial returns</em>来计算上述重要性采样公式中的<span class="math inline">\(G_t\)</span>。原理比较复杂，这里不再讨论。</p>
+
+      
+    </div>
+
+    <div>
+    
+      
+<div style="text-align:center;color: #ccc;font-size:14px;">
+------ 本文结束 ------
+</div>
+<br/>
+<div style="border: 1px solid black">
+<div style="margin-left:10px">
+<span style="font-weight:blod">版权声明</span>
+<p style="font-size: 15px;line-height: 30px">
+本文为博主原创，欢迎转载分享，只需注明作者与出处。
+<a href="http://liangxhao.com" style="color:#258FC6">http://liangxhao.com</a>
+</p>
+</div>
+</div>
+
+    
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechat.png" alt="liangxhao WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.png" alt="liangxhao Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Reinforcement-learning-an-introduction/" rel="tag"># Reinforcement learning: an introduction</a>
+          
+            <a href="/tags/增强学习/" rel="tag"># 增强学习</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/06/26/Overcoming-catastrophic-forgetting-in-neural-networks/" rel="next" title="Overcoming catastrophic forgetting in neural networks">
+                <i class="fa fa-chevron-left"></i> Overcoming catastrophic forgetting in neural networks
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/06/26/Chapter-6-Temporal-Difference-Learning/" rel="prev" title="Chapter 6: Temporal-Difference Learning">
+                Chapter 6: Temporal-Difference Learning <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="uyan_frame"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="liangxhao" />
+          <p class="site-author-name" itemprop="name">liangxhao</p>
+           
+              <p class="site-description motion-element" itemprop="description">读书笔记,机器学习,人工智能,深度学习,增强学习</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/lianggreathao" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#蒙特卡洛预测"><span class="nav-number">1.</span> <span class="nav-text">蒙特卡洛预测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#蒙特卡洛估计行为值"><span class="nav-number">2.</span> <span class="nav-text">蒙特卡洛估计行为值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#蒙特卡洛控制"><span class="nav-number">3.</span> <span class="nav-text">蒙特卡洛控制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不使用es的蒙特卡洛控制"><span class="nav-number">4.</span> <span class="nav-text">不使用ES的蒙特卡洛控制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重要性采样下的off-policy预测"><span class="nav-number">5.</span> <span class="nav-text">重要性采样下的off-policy预测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#增量实现"><span class="nav-number">6.</span> <span class="nav-text">增量实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#off-policy蒙特卡洛控制"><span class="nav-number">7.</span> <span class="nav-text">Off-Policy蒙特卡洛控制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#特定回报值的重要性采样"><span class="nav-number">8.</span> <span class="nav-text">特定回报值的重要性采样</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liangxhao</span>
+</div>
+
+<div>
+ 鲁ICP备17028501号
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    
+
+    
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2131413"></script>
+      <!-- UY END -->
+    
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Mc0haSU7SydxhfVvyRc1sNB2-gzGzoHsz", "4qWjMvcerWNq94Y7alHLuWQ9");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+</body>
+</html>

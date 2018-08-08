@@ -1,0 +1,1200 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="神经网络," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="流裳照影" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="论文解析：Zamir, A. R., Wu, T.-L., Sun, L., Shen, W., Malik, J., &amp;amp; Savarese, S. (2016). Feedback Networks. Retrieved from http://feedbacknet.stanford.edu/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Feedback Networks">
+<meta property="og:url" content="http://liangxhao.com/2017/06/26/Feedback-Networks/index.html">
+<meta property="og:site_name" content="流裳照影">
+<meta property="og:description" content="论文解析：Zamir, A. R., Wu, T.-L., Sun, L., Shen, W., Malik, J., &amp;amp; Savarese, S. (2016). Feedback Networks. Retrieved from http://feedbacknet.stanford.edu/">
+<meta property="og:image" content="http://liangxhao.com/images/papers/170315_fn_0.png">
+<meta property="og:image" content="http://liangxhao.com/images/papers/170315_fn_1.png">
+<meta property="og:image" content="http://liangxhao.com/images/papers/170315_fn_2.png">
+<meta property="og:image" content="http://liangxhao.com/images/papers/170315_fn_3.png">
+<meta property="og:image" content="http://liangxhao.com/images/papers/170315_fn_4.png">
+<meta property="og:updated_time" content="2017-06-26T10:38:42.413Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Feedback Networks">
+<meta name="twitter:description" content="论文解析：Zamir, A. R., Wu, T.-L., Sun, L., Shen, W., Malik, J., &amp;amp; Savarese, S. (2016). Feedback Networks. Retrieved from http://feedbacknet.stanford.edu/">
+<meta name="twitter:image" content="http://liangxhao.com/images/papers/170315_fn_0.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://liangxhao.com/2017/06/26/Feedback-Networks/"/>
+
+
+
+
+
+  <title> Feedback Networks | 流裳照影 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f8a89cc8096713b945145412bc6947a4";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">流裳照影</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的愿望是在白天走路</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocapitalize="off" autocomplete="off" autocorrect="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://liangxhao.com/2017/06/26/Feedback-Networks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="liangxhao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="流裳照影">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Feedback Networks
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-26T15:30:00+08:00">
+                2017-06-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/论文笔记/" itemprop="url" rel="index">
+                    <span itemprop="name">论文笔记</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017/06/26/Feedback-Networks/" class="leancloud_visitors" data-flag-title="Feedback Networks">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>论文解析：Zamir, A. R., Wu, T.-L., Sun, L., Shen, W., Malik, J., &amp; Savarese, S. (2016). Feedback Networks. Retrieved from http://feedbacknet.stanford.edu/</p>
+<a id="more"></a>
+<h4 id="概要">概要</h4>
+<p>目前在计算机视觉领域，最成功的学习模型一般都是学习连续的特征表示（successive representations），然后使用一个决策层（decision layer）进行分类或者识别。这种模型一般可以通过多层前馈网络实现，如ConvNets，其中的每一层都是连续特征表示的一部分。但是用反馈的方法也可以达到相同的效果，通过多次迭代，前一次迭代得到输出，反馈输入到模型中，得到下一次的输出，从而得到多个连续的特征表示。</p>
+<p>反馈模型有以下优势：</p>
+<ul>
+<li>Early Predictions：可以得到早期的预测结果；</li>
+<li>Taxnomoy Compliance：输出结果符合类别的分层结构；</li>
+<li>Episodic Curriculum Learning：提供了新的理论基础；</li>
+</ul>
+<p>作者提出了基于反馈的一般学习模型，其测试结果比目前的前馈网络相当甚至更好，此外，作者还给出了并行化实现的方法，探究了反馈结构和模型设计的不同机制。</p>
+<h4 id="详细内容">详细内容</h4>
+<h5 id="优势">优势</h5>
+<ol style="list-style-type: decimal">
+<li>Early Predictions。</li>
+</ol>
+<p>反馈结构中只有当信号传到网络最后一层时才给出预测结果，而在反馈网络中可以在迭代中预测。如下图，第一次预测出是载具，第二次预测出是有轮载具，第三次预测出自行车，第四次预测出山地自行车。</p>
+<div class="figure">
+<img src="/images/papers/170315_fn_0.png" alt="figure 1">
+<p class="caption">figure 1</p>
+</div>
+<ol start="2" style="list-style-type: decimal">
+<li>Taxnomoy Compliance。</li>
+</ol>
+<p>上述每次的预测结果符合从粗到细的分类结构。</p>
+<ol start="3" style="list-style-type: decimal">
+<li><p>Episodic Curriculum Learning。</p>
+<p>Curriculum Learning在机器学习系统或者人类教育上都是一种重要的途径。在非凸优化问题上它帮助找到更好的最小值点，在优化问题上它可以加快优化速度。</p>
+<p>前馈网络的预测结果是一次性的，所以要进行Curriculum Learning的话，必须要根据复杂度把训练数据赋予一个相同完整的网络，把不同的Curriculum安插在每一次测试当中（比如第一次训练给一些简单的例子，以后几次再给难一些的）。而反馈学习模型可以将Curriculum安插在一次测试中的任何一段，称为Episodic Curriculum Learning。</p></li>
+</ol>
+<h5 id="方法">方法</h5>
+<p>作者给出了以循环神经网络（RNN）为基础的反馈模型的设计方法。</p>
+<p>这里以ConvLSTM为例，完成进行图像分类的任务。</p>
+<p>ConvLSTM就是用卷积操作代替LSTM的每一个元胞（Cell），LSTM的元胞结构如下，这里不再赘述。</p>
+<div class="figure">
+<img src="/images/papers/170315_fn_1.png" alt="figure 2">
+<p class="caption">figure 2</p>
+</div>
+<p>反馈预测可通过ConvLSTM模型实现，具体如下：</p>
+<ol style="list-style-type: decimal">
+<li>在LSTM的每个时刻<span class="math inline">\(t\)</span>，输入为图像，用卷积代替<span class="math inline">\(cell\)</span>操作后，输出也为图像。增加图像一般的后处理过程（例如pooling, fully connected layer等），得到<span class="math inline">\(t\)</span>时刻的交叉熵损失<span class="math inline">\(L_t\)</span>，总的损失函数为各个时刻的损失之和，其中<span class="math inline">\(\gamma\)</span>是是折扣系数；</li>
+</ol>
+<p><span class="math display">\[
+   L=\sum_{t=1}^T{\gamma ^tL_t},\ where\ L_t=-\log \frac{e^{H_{t}^{D}\left[ C \right]}}{\sum_j{e_{t}^{D}\left[ j \right]}}
+   \]</span></p>
+<ol start="2" style="list-style-type: decimal">
+<li><p>各个时刻的卷积参数<span class="math inline">\(W\)</span>是共享的，每个时刻都进行反向传播训练；</p></li>
+<li><p>将网络的各个时刻展开如下图所示，其中红色箭头表示skip connections（类似于ResNet）</p></li>
+</ol>
+<div class="figure">
+<img src="/images/papers/170315_fn_2.png" alt="figure 3">
+<p class="caption">figure 3</p>
+</div>
+<ol start="4" style="list-style-type: decimal">
+<li><p>作者提出的网络结构非常灵活，可以选择ConvLSTM模块中前馈网络的数量或者用不同数目的ConvLSTM模块进行堆叠。我们可以根据单个ConvLSTM模块中前馈层(Conv + BN)的数量对反馈网络进行分类。例如下图所示。分别记为Stack-1，Stack-2，Stack-All，其中Stack-i表示ConvLSTM中有<span class="math inline">\(i\)</span>个前馈层，这决定了隐藏状态在整个网络上的分布。</p>
+<div class="figure">
+<img src="/images/papers/170315_fn_3.png" alt="figure 4">
+<p class="caption">figure 4</p>
+</div></li>
+</ol>
+<p>网络的一些细节如下：</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Temporal Skip Connection</strong>。忽略连接，设<span class="math inline">\(t\)</span>表示第<span class="math inline">\(t\)</span>时刻，<span class="math inline">\(d\)</span>表示网络的深度（Physical Depth），则<span class="math inline">\(t\)</span>时刻，跳过的长度为<span class="math inline">\(n\)</span>，则新输入可表示为： <span class="math display">\[
+  \widehat{X_{t}^{d}}=X_{t}^{d}+H_{t-n}^{d}
+  \]</span></p></li>
+<li><p><strong>Taxonomic Prediction</strong>。反馈网络系统可以在迭代过程中给出预测，早期是粗略的分类，随着迭代的进行，可以实现精细的分类。根据Softmax中的定义，识别对象属于某一类的概率： <span class="math display">\[
+  P\left( y_i|x;W \right) =\frac{e^{f_{y_i}}}{\sum_j{e^{f_j}}}
+  \]</span> 则它属于更高级的大类别的概率可以表示为其中各个小类的概率之和： <span class="math display">\[
+P\left( Y_k|x;W \right) =\sum_{i\in 1:n}{P\left( y_i|x;W \right)}
+\]</span></p></li>
+<li><p><strong>Episodic Curriculum Learning</strong>。反馈网络在第<span class="math inline">\(k\)</span>次迭代过程中采用退火损失函数，则在第<span class="math inline">\(t\)</span>次粗分类与细分类损失函数可表示为：</p></li>
+</ol>
+<p><span class="math display">\[
+   L\left( t \right) =\varsigma L_t^{Coarset}+\left( 1-\varsigma \right) L_t^{Fine}
+   \]</span> 其中<span class="math inline">\(\varsigma =\frac{t}{k}\)</span>，<span class="math inline">\(t=0,1,2,...,k\)</span>，采用线性衰退的形式。</p>
+<ol start="4" style="list-style-type: decimal">
+<li><strong>Computation Graph Analysis</strong>。设网络<span class="math inline">\(m\)</span>为迭代次数，<span class="math inline">\(n\)</span>为物理深度。则前馈的深度为<span class="math inline">\(mn-1\)</span>，反馈的深度为<span class="math inline">\(m+n-1\)</span>，计算图如下，关于硬件并行方面的实现这里不细述。</li>
+</ol>
+<div class="figure">
+<img src="/images/papers/170315_fn_4.png" alt="figure 5">
+<p class="caption">figure 5</p>
+</div>
+
+      
+    </div>
+
+    <div>
+    
+      
+<div style="text-align:center;color: #ccc;font-size:14px;">
+------ 本文结束 ------
+</div>
+<br/>
+<div style="border: 1px solid black">
+<div style="margin-left:10px">
+<span style="font-weight:blod">版权声明</span>
+<p style="font-size: 15px;line-height: 30px">
+本文为博主原创，欢迎转载分享，只需注明作者与出处。
+<a href="http://liangxhao.com" style="color:#258FC6">http://liangxhao.com</a>
+</p>
+</div>
+</div>
+
+    
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechat.png" alt="liangxhao WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.png" alt="liangxhao Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/神经网络/" rel="tag"># 神经网络</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/18/Chapter-4-Dynamic-Programming/" rel="next" title="Chapter 4: Dynamic Programming">
+                <i class="fa fa-chevron-left"></i> Chapter 4: Dynamic Programming
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/06/26/Overcoming-catastrophic-forgetting-in-neural-networks/" rel="prev" title="Overcoming catastrophic forgetting in neural networks">
+                Overcoming catastrophic forgetting in neural networks <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="uyan_frame"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="liangxhao" />
+          <p class="site-author-name" itemprop="name">liangxhao</p>
+           
+              <p class="site-description motion-element" itemprop="description">读书笔记,机器学习,人工智能,深度学习,增强学习</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/lianggreathao" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#概要"><span class="nav-number">1.</span> <span class="nav-text">概要</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#详细内容"><span class="nav-number">2.</span> <span class="nav-text">详细内容</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#优势"><span class="nav-number">2.1.</span> <span class="nav-text">优势</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#方法"><span class="nav-number">2.2.</span> <span class="nav-text">方法</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liangxhao</span>
+</div>
+
+<div>
+ 鲁ICP备17028501号
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    
+
+    
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2131413"></script>
+      <!-- UY END -->
+    
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Mc0haSU7SydxhfVvyRc1sNB2-gzGzoHsz", "4qWjMvcerWNq94Y7alHLuWQ9");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+</body>
+</html>

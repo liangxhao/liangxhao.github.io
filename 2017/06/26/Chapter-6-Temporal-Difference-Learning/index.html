@@ -1,0 +1,1243 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Reinforcement learning: an introduction,增强学习," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="流裳照影" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Reinforcement learning : an introduction(Second Edition). 读书笔记
+本章是在动态规划方法和蒙特卡洛方法的基础上给出了一种更为实用的策略计算方法——时序差分算法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Chapter 6: Temporal-Difference Learning">
+<meta property="og:url" content="http://liangxhao.com/2017/06/26/Chapter-6-Temporal-Difference-Learning/index.html">
+<meta property="og:site_name" content="流裳照影">
+<meta property="og:description" content="Reinforcement learning : an introduction(Second Edition). 读书笔记
+本章是在动态规划方法和蒙特卡洛方法的基础上给出了一种更为实用的策略计算方法——时序差分算法。">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_6.1_0.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_6.1_1.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_6.4_0.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_6.4_1.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_6.4_2.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_6.5_0.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_6.5_1.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_6.6_0.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_6.7_0.jpg">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_6.8_0.jpg">
+<meta property="og:updated_time" content="2017-06-26T09:42:08.806Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chapter 6: Temporal-Difference Learning">
+<meta name="twitter:description" content="Reinforcement learning : an introduction(Second Edition). 读书笔记
+本章是在动态规划方法和蒙特卡洛方法的基础上给出了一种更为实用的策略计算方法——时序差分算法。">
+<meta name="twitter:image" content="http://liangxhao.com/images/rl_book/rl_6.1_0.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://liangxhao.com/2017/06/26/Chapter-6-Temporal-Difference-Learning/"/>
+
+
+
+
+
+  <title> Chapter 6: Temporal-Difference Learning | 流裳照影 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f8a89cc8096713b945145412bc6947a4";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">流裳照影</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的愿望是在白天走路</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocapitalize="off" autocomplete="off" autocorrect="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://liangxhao.com/2017/06/26/Chapter-6-Temporal-Difference-Learning/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="liangxhao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="流裳照影">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Chapter 6: Temporal-Difference Learning
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-26T16:21:00+08:00">
+                2017-06-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/读书笔记/" itemprop="url" rel="index">
+                    <span itemprop="name">读书笔记</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017/06/26/Chapter-6-Temporal-Difference-Learning/" class="leancloud_visitors" data-flag-title="Chapter 6: Temporal-Difference Learning">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Reinforcement learning : an introduction(Second Edition). 读书笔记</p>
+<p>本章是在动态规划方法和蒙特卡洛方法的基础上给出了一种更为实用的策略计算方法——时序差分算法。</p>
+<a id="more"></a>
+<p>时序差分算法（TD）是MC与DP的结合，MC必须到等到episode结束时才更新value，而TD可以在每步episode中更新；MC没有用到马尔可夫性，即在估计某个value时没有利用到其它的value，而TD因此具有bootstrap。</p>
+<h4 id="td预测">TD预测</h4>
+<p>根据上一章介绍的蒙特卡洛方法可知，一个简单的蒙特卡洛方法可以写成如下形式： <span class="math display">\[
+V\left( S_t \right) \gets V\left( S_t \right) +\alpha \left[ G_t-V\left( S_t \right) \right]
+\]</span> 其中<span class="math inline">\(\alpha\)</span>是一个固定的步长，这种方法记为<span class="math inline">\(constant-\alpha\)</span> MC。当一个episode结束时，<span class="math inline">\(G_t\)</span>才是可知的。</p>
+<p>由于 <span class="math display">\[
+v_{\pi}\left( s \right) =\mathbb{E}_{\pi}\left[ G_t|S_t=s \right] =\mathbb{E}_{\pi}\left[ R_{t+1}+\gamma v_{\pi}\left( S_{t+1} \right) |S_t=s \right]
+\]</span> 所以MC可以与之结合，例如，TD(0)方法就是使用<span class="math inline">\(R_{t+1}+\gamma v_{\pi}\left( S_{t+1} \right)\)</span>代替<span class="math inline">\(G_t\)</span>，因而它具有bootstrap，就像DP算法那样，利用到了马尔科夫性，更新公式如下： <span class="math display">\[
+V\left( S_t \right) \gets V\left( S_t \right) +\alpha \left[ R_{t+1}+\gamma V\left( S_{t+1} \right) -V\left( S_t \right) \right] 
+\]</span> 算法流程如下：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_6.1_0.jpg" alt="figure 1">
+<p class="caption">figure 1</p>
+</div>
+<p>TD error记为： <span class="math display">\[
+\delta _t=R_{t+1}+\gamma V\left( S_{t+1} \right) -V\left( S_t \right) 
+\]</span> 则MC的error经过计算可表示为： <span class="math display">\[
+G_t-V\left( S_t \right) =\sum_{k=0}^{T-t-1}{\gamma ^k}\delta _{t+k}
+\]</span> TD(0)的backup diagram如下图：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_6.1_1.jpg" alt="figure 2">
+<p class="caption">figure 2</p>
+</div>
+<h4 id="td预测方法的优点">TD预测方法的优点</h4>
+<p>TD算法是由MC和DP结合而来的，所以具有它们的优点。</p>
+<p>TD不需要环境模型（奖励reward、状态转移概率）</p>
+<p>TD是即时的，即不需要等到episode完成时才能更新value</p>
+<h4 id="td0的优化">TD(0)的优化</h4>
+<p>如果episodes的数量比较有限，那么每个episode的每个step只能更新一次value，为了尽量利用资源，提高优化效率，可以采用批更新方法（<em>batch updating</em>）。</p>
+<p>方法是：每次完成一个episode就将其保存下来，随之每次都要根据所有保存的episode更新value。例如完成第10个episode时，就已经保存了10个，然后用这10个再更新value。</p>
+<p>certainty-equivalence estimate：只要给定正确的模型，我们就可以估计出正确的value。这等价于假设潜在的过程是已知的，而非是估计而来的。</p>
+<p>batch TD(0)正属于这种certainty-equivalence estimate。</p>
+<p>TD算法比MC表现要好，batch MC实际上是最小化训练集的均方根误差，而batch TD则是最大化MDP模型的最大似然值。</p>
+<h4 id="sarsa-on-policy-td-control">Sarsa: On-Policy TD Control</h4>
+<p>我们依旧根据GPI的模式解决控制问题，Sarsa是属于On-policy的算法。</p>
+<p>episode的状态行为序列为：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_6.4_0.jpg" alt="figure 3">
+<p class="caption">figure 3</p>
+</div>
+<p>类似于预测问题，我们同样可以建立类似的更新方法： <span class="math display">\[
+Q\left( S_t,A_t \right) \gets Q\left( S_t,A_t \right) +\alpha \left[ R_{t+1}+\gamma Q\left( S_{t+1},A_{t+1} \right) -Q\left( S_t,A_t \right) \right]
+\]</span> 这里涉及到了五元组$( S_t,A_t,R_{t+1},S_{t+1},A_{t+1} ) $，其backup diagram如下：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_6.4_1.jpg" alt="figure 4">
+<p class="caption">figure 4</p>
+</div>
+<p>伪代码形式的算法流程如下图：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_6.4_2.jpg" alt="figure 5">
+<p class="caption">figure 5</p>
+</div>
+<h4 id="q-learning-off-policy-td-control">Q-learning: Off-Policy TD Control</h4>
+<p>Q-learning是属于Off-policy的算法，它与Sarsa稍有不同，其更新公式如下： <span class="math display">\[
+Q\left( S_t,A_t \right) \gets Q\left( S_t,A_t \right) +\alpha \left[ R_{t+1}+\gamma \underset{a}{\max}Q\left( S_{t+1},a \right) -Q\left( S_t,A_t \right) \right]
+\]</span> 伪代码形式的算法流程如下：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_6.5_0.jpg" alt="figure 6">
+<p class="caption">figure 6</p>
+</div>
+<p>注意这里，off-policy与上面on-policy的不同：on-policy总是使用现有的（目标）策略（<span class="math inline">\(A\gets A&#39;\)</span>），而off-policy则是重新选择新的<span class="math inline">\(A\)</span>。</p>
+<p>其backup diagram如下：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_6.5_1.jpg" alt="figure 7">
+<p class="caption">figure 7</p>
+</div>
+<h4 id="expected-sarsa">Expected Sarsa</h4>
+<p>在Q-learning中，用期望代替状态行为值的最大值，即为期望Sarsa算法。 <span class="math display">\[
+\begin{align}
+Q\left( S_t,A_t \right) &amp;\gets Q\left( S_t,A_t \right) +\alpha \left[ R_{t+1}+\gamma \mathbb{E}\left[ Q\left( S_{t+1},A_{t+1} \right) |S_{t+1} \right] -Q\left( S_t,A_t \right) \right] \\
+&amp;\gets Q\left( S_t,A_t \right) +\alpha \left[ R_{t+1}+\gamma \sum_a{\pi \left( a|S_{t+1} \right)}Q\left( S_{t+1},a \right) -Q\left( S_t,A_t \right) \right] 
+\end{align}
+\]</span></p>
+<p>其backup diagram如下：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_6.6_0.jpg" alt="figure 8">
+<p class="caption">figure 8</p>
+</div>
+<p>这几种算法在性能上有所差异，原书进行了一定对比。</p>
+<p>例如Expected Sarsa可以安全地设置<span class="math inline">\(\alpha\)</span>为1。而Sarsa则必须设置<span class="math inline">\(\alpha\)</span>较小，而且需要长期的优化。</p>
+<h4 id="最大化偏差与两次学习">最大化偏差与两次学习</h4>
+<p>无论是Q-learning还是Sarsa（<span class="math inline">\(\epsilon -greedy\)</span>）都有取最大值的操作，这会导致正的偏差。</p>
+<p>例如真实值 $ q( s,a ) $ 是0，而它的估计值 $Q( s,a ) $ ，有时大于0，有时小于0，如果一直取最大值，那就会导致正的偏差。</p>
+<p>一种解决方法是两次学习（Double Learning）。</p>
+<ul>
+<li><p>假设我们把数据集划分为两部分，用它们估计两组独立的参数：$Q_1( a ) $ 和 $Q_2( a ) $。</p></li>
+<li><p>用<span class="math inline">\(Q_1\)</span>来找最大值的行为：$A^*=arg_a( Q_1( a ) ) $</p></li>
+<li><p>用<span class="math inline">\(Q_2\)</span>来估计该行为的值：$Q_2( A^* ) =Q_2( arg_a( Q_1( a ) ) ) $</p></li>
+<li><p>则可以得到无偏估计：<span class="math inline">\(\mathbb{E}\)</span>$[Q_2( A^* ) ] = q ( A^* ) $</p></li>
+<li>同样地过程也可以反过来做，即先用<span class="math inline">\(Q_2\)</span>来找最大的行为，再用<span class="math inline">\(Q_1\)</span>来估计该行为的值。</li>
+<li><p>每个step只做其中的一个</p></li>
+</ul>
+<p>这个思想是对MDPs的自然扩展，例如可以应用到Q-learning中去，其中<span class="math inline">\(Q_1\)</span>更新公式为： <span class="math display">\[
+Q_1\left( S_t,A_t \right) \gets Q_1\left( S_t,A_t \right) +\alpha \left( R_{t+1}+\gamma Q_2\left( S_{t+1},\underset{a}{arg\max Q_1\left( S_{t+1},a \right) -Q_1\left( S_t,A_t \right)} \right) \right)
+\]</span> <span class="math inline">\(Q_2\)</span>的公式也是类似的，每次更新时，以0.5的概率随机选择1或者2.</p>
+<p>算法流程如下：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_6.7_0.jpg" alt="figure 9">
+<p class="caption">figure 9</p>
+</div>
+<h4 id="games-afterstates-and-other-special-cases">Games, Afterstates, and Other Special Cases</h4>
+<p>上面介绍的算法都属于一个统一的方式，例如它们都涉及到求行为值函数。</p>
+<p>然而第一章展示的TD算法用于求解井字游戏中更像是状态值函数，但仔细一看，它并非通常意义下的状态值函数，也不是行为值函数。</p>
+<p>传统的状态值函数估计的是那些有机会选择行为的状态，而井字游戏中的状态值函数是在agent做了移动后才估计，我们称之为afterstates，相应的值函数叫做afterstates值函数。</p>
+<p>afterstates值函数对于我们对初始部分已知但是没必要完全知道的情况有用处，例如游戏中我们知道每走一步的奖励，我们知道象棋每一步可能移动到的地方，但是我们不知道对手怎么回应。afterstates很自然的利用到这些知识。</p>
+<p>传统的行为值函数把位置和移动映射到一个估计值，但是很多位置-移动对会产生相同的位置结果，如下面的例子：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_6.8_0.jpg" alt="figure 10">
+<p class="caption">figure 10</p>
+</div>
+<p>afterstates会给出相等的value，但是传统的方法则不行。</p>
+<p>afterstates在很多任务中十分普遍，这里不再细述，它仍然符合GPI框架。</p>
+
+      
+    </div>
+
+    <div>
+    
+      
+<div style="text-align:center;color: #ccc;font-size:14px;">
+------ 本文结束 ------
+</div>
+<br/>
+<div style="border: 1px solid black">
+<div style="margin-left:10px">
+<span style="font-weight:blod">版权声明</span>
+<p style="font-size: 15px;line-height: 30px">
+本文为博主原创，欢迎转载分享，只需注明作者与出处。
+<a href="http://liangxhao.com" style="color:#258FC6">http://liangxhao.com</a>
+</p>
+</div>
+</div>
+
+    
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechat.png" alt="liangxhao WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.png" alt="liangxhao Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Reinforcement-learning-an-introduction/" rel="tag"># Reinforcement learning: an introduction</a>
+          
+            <a href="/tags/增强学习/" rel="tag"># 增强学习</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/06/26/Chapter-5-Monte-Carlo-Methods/" rel="next" title="Chapter 5: Monte Carlo Methods">
+                <i class="fa fa-chevron-left"></i> Chapter 5: Monte Carlo Methods
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/06/26/Chapter-7-Multi-step-Bootstrapping/" rel="prev" title="Chapter 7: Multi-step Bootstrapping">
+                Chapter 7: Multi-step Bootstrapping <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="uyan_frame"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="liangxhao" />
+          <p class="site-author-name" itemprop="name">liangxhao</p>
+           
+              <p class="site-description motion-element" itemprop="description">读书笔记,机器学习,人工智能,深度学习,增强学习</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/lianggreathao" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#td预测"><span class="nav-number">1.</span> <span class="nav-text">TD预测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#td预测方法的优点"><span class="nav-number">2.</span> <span class="nav-text">TD预测方法的优点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#td0的优化"><span class="nav-number">3.</span> <span class="nav-text">TD(0)的优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sarsa-on-policy-td-control"><span class="nav-number">4.</span> <span class="nav-text">Sarsa: On-Policy TD Control</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#q-learning-off-policy-td-control"><span class="nav-number">5.</span> <span class="nav-text">Q-learning: Off-Policy TD Control</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#expected-sarsa"><span class="nav-number">6.</span> <span class="nav-text">Expected Sarsa</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#最大化偏差与两次学习"><span class="nav-number">7.</span> <span class="nav-text">最大化偏差与两次学习</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#games-afterstates-and-other-special-cases"><span class="nav-number">8.</span> <span class="nav-text">Games, Afterstates, and Other Special Cases</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liangxhao</span>
+</div>
+
+<div>
+ 鲁ICP备17028501号
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    
+
+    
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2131413"></script>
+      <!-- UY END -->
+    
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Mc0haSU7SydxhfVvyRc1sNB2-gzGzoHsz", "4qWjMvcerWNq94Y7alHLuWQ9");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+</body>
+</html>

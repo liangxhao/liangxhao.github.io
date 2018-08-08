@@ -1,0 +1,1274 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Reinforcement learning: an introduction,增强学习," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="流裳照影" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Reinforcement learning : an introduction(Second Edition). 读书笔记
+本章介绍了增强学习问题的基本模型，引入了马尔科夫决策过程和贝尔曼方程，这是以后解决增强学习问题的基础。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Chapter 3: Finite Markov Decision Processes">
+<meta property="og:url" content="http://liangxhao.com/2017/04/18/Chapter-3-Finite-Markov-Decision-Processes/index.html">
+<meta property="og:site_name" content="流裳照影">
+<meta property="og:description" content="Reinforcement learning : an introduction(Second Edition). 读书笔记
+本章介绍了增强学习问题的基本模型，引入了马尔科夫决策过程和贝尔曼方程，这是以后解决增强学习问题的基础。">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_3.1_0.png">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_3.4_0.png">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_3.6_0.png">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_3.6_1.png">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_3.7_0.png">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_3.7_1.png">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_3.7_2.png">
+<meta property="og:image" content="http://liangxhao.com/images/rl_book/rl_3.7_3.png">
+<meta property="og:updated_time" content="2017-04-19T01:32:57.174Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chapter 3: Finite Markov Decision Processes">
+<meta name="twitter:description" content="Reinforcement learning : an introduction(Second Edition). 读书笔记
+本章介绍了增强学习问题的基本模型，引入了马尔科夫决策过程和贝尔曼方程，这是以后解决增强学习问题的基础。">
+<meta name="twitter:image" content="http://liangxhao.com/images/rl_book/rl_3.1_0.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://liangxhao.com/2017/04/18/Chapter-3-Finite-Markov-Decision-Processes/"/>
+
+
+
+
+
+  <title> Chapter 3: Finite Markov Decision Processes | 流裳照影 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?f8a89cc8096713b945145412bc6947a4";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">流裳照影</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">我的愿望是在白天走路</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocapitalize="off" autocomplete="off" autocorrect="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://liangxhao.com/2017/04/18/Chapter-3-Finite-Markov-Decision-Processes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="liangxhao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="流裳照影">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Chapter 3: Finite Markov Decision Processes
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-18T21:21:45+08:00">
+                2017-04-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/读书笔记/" itemprop="url" rel="index">
+                    <span itemprop="name">读书笔记</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017/04/18/Chapter-3-Finite-Markov-Decision-Processes/" class="leancloud_visitors" data-flag-title="Chapter 3: Finite Markov Decision Processes">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Reinforcement learning : an introduction(Second Edition). 读书笔记</p>
+<p>本章介绍了增强学习问题的基本模型，引入了马尔科夫决策过程和贝尔曼方程，这是以后解决增强学习问题的基础。</p>
+<a id="more"></a>
+<p>先建立描述增强学习问题的数学化形式，进行精确地理论陈述。</p>
+<h4 id="代理-环境接口">代理-环境接口</h4>
+<p>The Agent–Environment Interface.</p>
+<p>代理（agent）：学习者或者决策者</p>
+<p>环境（environment）：代理之外的一切，并与代理交互。</p>
+<div class="figure">
+<img src="/images/rl_book/rl_3.1_0.png" alt="figure 1">
+<p class="caption">figure 1</p>
+</div>
+<p>代理与环境在离散时间序列中进行交互。在时刻<span class="math inline">\(t\)</span>，代理收到环境状态（state）的表达<span class="math inline">\(S_t\)</span>，<span class="math inline">\(S_t\in S\)</span>，<span class="math inline">\(S\)</span>是所有状态可能的集合。代理选择一个动作<span class="math inline">\(A_t\)</span>，<span class="math inline">\(A_t \in A\left( S_t \right)\)</span>，其中<span class="math inline">\(A\left( S_t \right)\)</span>是在状态<span class="math inline">\(S_t\)</span>下所有可用动作的集合。下一个时刻，代理将会收到将会收到一个数值的奖励<span class="math inline">\(R_t\)</span>，并且收到一个新的状态<span class="math inline">\(S_{t+1}\)</span>。</p>
+<h4 id="情景性任务与连续性任务">情景性任务与连续性任务</h4>
+<p>情节性任务(Episodic Tasks)，所有的任务可以被可以分解成一系列情节。逻辑上，可以看作为有限步骤的任务。</p>
+<p>连续任务(Continuing Tasks) ，所有的任务不能分解。可以看作为无限步骤任务。</p>
+<h4 id="目标与奖励">目标与奖励</h4>
+<p>目标（goal）：代理的目标是最大化它在长时间内所收到的所有奖励之和。</p>
+<p>设代理在时刻<span class="math inline">\(t\)</span>后收到的奖励分别为<span class="math inline">\(R_{t+1}\)</span>，<span class="math inline">\(R_{t+2}\)</span>，<span class="math inline">\(R_{t+3}\)</span>……</p>
+<p>那么在<span class="math inline">\(t\)</span>时刻的目标是：</p>
+<ol style="list-style-type: decimal">
+<li>情节性任务</li>
+</ol>
+<p><span class="math display">\[
+   G_t\doteq R_{t+1}+R_{t+2}+\cdot \cdot \cdot +R_T
+   \]</span></p>
+<ol start="2" style="list-style-type: decimal">
+<li>连续性任务 <span class="math display">\[
+   G_t\doteq R_{t+1}+\gamma R_{t+2}+\gamma ^2R_{t+3}\cdot \cdot \cdot =\sum_{k=0}^{\infty}{\gamma ^kR_{t+k+1}}
+   \]</span> 其中<span class="math inline">\(0\le \gamma \le 1\)</span>称为折扣系数。</li>
+</ol>
+<p>为了简单，可以将这两种任务统一起来进行表达，如下图，可以认为情节性任务中代理进入终止状态以后，每个时刻收到的奖励都为0。</p>
+<div class="figure">
+<img src="/images/rl_book/rl_3.4_0.png" alt="figure 2">
+<p class="caption">figure 2</p>
+</div>
+<p>统一之后的表达式如下： <span class="math display">\[
+G_t\doteq \sum_{k=0}^{T-t-1}{\gamma ^kR_{t+k+1}}
+\]</span> 其中$T=<span class="math inline">\(或者\)</span>=1$。</p>
+<h4 id="马尔科夫属性">马尔科夫属性</h4>
+<p>一般情况下环境在<span class="math inline">\(t+1\)</span>时刻的响应（状态<span class="math inline">\(s&#39;\)</span>、奖励<span class="math inline">\(r\)</span>）是由迄今为止所有的状态、行动和奖励决定的，可以用联合概率分布来表示： <span class="math display">\[
+Pr\{S_{t+1} = s&#39;, R_{t+1} = r | S_0, A_0, R_1, S_1, A_1, \dots, R_t, S_t, A_t \}
+\]</span></p>
+<p>一个状态如果能够保留历史上所有相关的状态信号，则称它具有马尔科夫属性。</p>
+<p>例如棋盘上所有棋子当前的状态，虽然之前很多序列的信息都丢失了，但是对于下一步真正重要的一切都有保留。</p>
+<p>所以如果状态具有马尔科夫属性，那么上式就可以简化为如下形式： <span class="math display">\[
+p(s&#39;, r | s, a) = Pr \{S_{t+1} = s&#39;, R_{t+1} = r | S_t = s, A_t = a \}
+\]</span> 如果一个环境具有马尔科夫属性的话，在给定当前状态和行动后就可以预测下一个时刻的状态和奖励。通过迭代该式，就可以预测所有未来时刻的状态和奖励，甚至求出完整的历史信息。</p>
+<h4 id="马尔科夫决策过程">马尔科夫决策过程</h4>
+<p>一个增强学习任务如果满足马尔科夫属性，那么就称之为马尔科夫决策过程（MDP）。如果状态和动作空间是有限的，则称之为有限马尔科夫决策过程（finite MDP）。</p>
+<p>在状态<span class="math inline">\(s\)</span>下，执行行动<span class="math inline">\(a\)</span>，转变为状态<span class="math inline">\(s&#39;\)</span>并获得奖赏<span class="math inline">\(r\)</span>的可能性： <span class="math display">\[
+p(s&#39;, r | s, a) \doteq Pr \{S_{t+1} = s&#39;, R_{t+1} = r | S_t = s, A_t = a \}
+\]</span> 在给定上式后就可以计算任何想知道的环境信息，例如：</p>
+<p>state-action pairs，在状态<span class="math inline">\(s\)</span>下，执行动作<span class="math inline">\(a\)</span>的期望奖励： <span class="math display">\[
+r(s,a) \doteq \mathbb{E}[R_{t+1} | S_t = s, A_t = a] = \sum_{r \in \mathcal{R}} r \sum_{s&#39; \in \mathcal{S}} p(s&#39;, r|s,a)
+\]</span> state-transition probabilities，在状态<span class="math inline">\(s\)</span>下，执行行动<span class="math inline">\(a\)</span>，转变为状态<span class="math inline">\(s&#39;\)</span>的可能性： <span class="math display">\[
+p\left( s&#39;|s,a \right) \doteq Pr\{S_{t+1}=s&#39;|S_t=s,A_t=a\}=\sum_{r\in \mathcal{R}}{p}\left( s&#39;,r|s,a \right)
+\]</span></p>
+<p>expected rewards for state–action–next-state triples，在状态<span class="math inline">\(s\)</span>下，执行行动<span class="math inline">\(a\)</span>，转变为状态<span class="math inline">\(s′\)</span>的期望奖赏： <span class="math display">\[
+r\left( s,a,s&#39; \right) \doteq \mathbb{E}\left[ R_{t+1}|S_t=s,A_t=a,S_{t+1}=s&#39; \right] =\frac{\sum_{r\in \mathcal{R}}{r}p\left( s&#39;,r|s,a \right)}{p\left( s&#39;|s,a \right)}
+\]</span> 例如一个回收机器人的例子。在每个时刻，机器人有三种选择：</p>
+<p>（1）主动搜索罐头</p>
+<p>（2）保持静止，等待有人带来罐头</p>
+<p>（3）原路返回去充电</p>
+<p>最好的方式是主动搜索罐头，但这会导致它耗尽电量而关机，而等待的过程不会耗电。如果机器人关机的话，那就会有人来重启它。</p>
+<p>状态集合<span class="math inline">\(S=\{ high,low \}\)</span>，可能的行动有wait，search，recharge，则agent的行为集合是 <span class="math display">\[
+\begin{align}
+A \left( high \right) &amp;\doteq \{search,wait\} \\\
+A \left( low \right) &amp;\doteq \{search,wait,recharge\} 
+\end{align}
+\]</span></p>
+<p>具体信息参见原文，可以建立如下表格。</p>
+<div class="figure">
+<img src="/images/rl_book/rl_3.6_0.png" alt="figure 3">
+<p class="caption">figure 3</p>
+</div>
+<p>转换图：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_3.6_1.png" alt="figure 4">
+<p class="caption">figure 4</p>
+</div>
+<h4 id="值函数">值函数</h4>
+<p>策略<span class="math inline">\(\pi\)</span>是状态<span class="math inline">\(s\)</span>的映射，<span class="math inline">\(\pi \left( a| s \right)\)</span>是在状态<span class="math inline">\(s\)</span>下采取动作<span class="math inline">\(a\)</span>的概率。</p>
+<p><strong>状态值函数</strong>，state-value function for policy <span class="math inline">\(\pi\)</span></p>
+<p>在策略<span class="math inline">\(\pi\)</span>下状态<span class="math inline">\(s\)</span>的值函数，定义为<span class="math inline">\(v_{\pi} \left(s\right)\)</span>. <span class="math display">\[
+v_{\pi}(s) \doteq \mathbb{E}[G_t | S_t = s] = \mathbb{E}_{\pi} \left [ \sum_{k=0}^{\infty} \gamma^k R_{t+k+1} | S_t = s \right ]
+\]</span> <strong>行动值函数</strong>，action-value function for policy <span class="math inline">\(\pi\)</span></p>
+<p>类似的定义，在策略<span class="math inline">\(\pi\)</span>状态<span class="math inline">\(s\)</span>采取行动<span class="math inline">\(a\)</span>的值函数，定义为<span class="math inline">\(q_{\pi} \left(s,a\right)\)</span>. <span class="math display">\[
+q_{\pi}(s,a) \doteq \mathbb{E}[G_t | S_t = s, A_t = a] = \mathbb{E}_{\pi} \left [ \sum_{k=0}^{\infty} \gamma^k R_{t+k+1} | S_t = s, A_t = a \right ] 
+\]</span> 值函数满足递归性质，设<span class="math inline">\(s&#39;\)</span>表示下一时刻的状态，（迭代状态值函数）推导如下： <span class="math display">\[
+\begin{align}
+v_{\pi}(s) 
+    &amp; \doteq \mathbb{E}[G_t | S_t = s] \\
+    &amp; = \mathbb{E}_{\pi} \left [ \sum_{k=0}^{\infty} \gamma^k R_{t+k+1} | S_t = s \right ] \\
+    &amp; = \mathbb{E}_{\pi} \left [ R_{t+1} + \gamma\sum_{k=0}^{\infty} \gamma^k R_{t+k+2} | S_t = s \right ] \\
+    &amp; = \sum_{a} \pi(a|s) \sum_{s&#39;} \sum_{r} p(s&#39;,r|s,a) \left [ r + \gamma\mathbb{E}_{\pi} \left [ \sum_{k=0}^{\infty} \gamma^k R_{t+k+2} | S_{t+1} = s&#39; \right ] \right ] \\
+    &amp; = \sum_{a} \pi(a|s) \sum_{s&#39;,r} p(s&#39;,r|s,a) \left [ r + \gamma v_{\pi}(s&#39;) \right ], \ \forall s \in \mathcal{S}
+\end{align}
+\]</span> 上式就是关于<span class="math inline">\(v_{\pi}\)</span>的<strong>Bellman equation</strong>。</p>
+<p><strong>Backup diagrams</strong>，图形化可以表示如下：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_3.7_0.png" alt="figure 5">
+<p class="caption">figure 5</p>
+</div>
+<h4 id="最优值函数">最优值函数</h4>
+<p>解决增强学习问题，就是寻找策略以在长期内获得很多奖励。</p>
+<p>对于有限MDP，可以精确的定义这个问题。存在一个最优的策略<span class="math inline">\(\pi_*\)</span>，它得到的value总是比其它策略更多。</p>
+<p>在该策略下的值函数，称为最优值函数。</p>
+<p><strong>最优状态值函数</strong>，optimal state-value function： <span class="math display">\[
+v_*(s) \doteq \underset{\pi}{max} \ v_{\pi}(s), \forall s \in \mathcal{S}
+\]</span> <strong>最优行动值函数</strong>，optimal action-value function： <span class="math display">\[
+q_*(s) \doteq \underset{\pi}{max} \ q_{\pi}(s, a), \ \forall s \in \mathcal{S} \ and \ a \in \mathcal{A}(s)
+\]</span> 最优行动值函数等于最优状态值函数下的最大期望： <span class="math display">\[
+q_*(s,a) = \mathbb{E}[R_{t+1} + \gamma v_* (S_{t+1}) \ | \ S_t = s, A_t = a]
+\]</span> <strong>Bellman Optimality equation</strong></p>
+<p>同理，最优值函数也满足迭代性质。 <span class="math display">\[
+\begin{align}
+v_*(s)
+    &amp; = \underset{a \in \mathcal{A}(s)}{max} \ q_{\pi_*}(s, a) \\
+    &amp; = \underset{a}{max} \ \mathbb{E}_{\pi*} [G_t \ | \ S_t=s, A_t=a] \\
+    &amp; = \underset{a}{max} \ \mathbb{E}_{\pi*} \left [ \sum_{k=0}^{\infty} \gamma^k R_{t+k+1} \ | \ S_t=s, A_t=a \right ] \\
+    &amp; = \underset{a}{max} \ \mathbb{E}_{\pi*} \left [ R_{t+1} + \gamma\sum_{k=0}^{\infty} \gamma^k R_{t+k+2} \ | \ S_t=s, A_t=a \right ] \\
+    &amp; = \underset{a}{max} \ \mathbb{E}[R_{t+1} + \gamma v_*(S_{t+1}) \ | \ S_t=s, A_t=a ] \\
+    &amp; = \underset{a \in \mathcal{A}(s)}{max} \sum_{s&#39;,r} p(s&#39;,r|s,a)[r + \gamma v_*(s&#39;)]  \\
+\end{align}
+\]</span> 上式就是关于<span class="math inline">\(v_*\)</span>的Bellman equation。</p>
+<p>同样关于<span class="math inline">\(q_*\)</span>的Bellman equation如下： <span class="math display">\[
+\begin{aligned}
+    q_*\left( s,a \right) &amp;=\mathbb{E}\left[ R_{t+1}+\gamma \underset{a&#39;}{\max}q_*\left( S_{t+1},a&#39; \right) \,\,|\,\,S_t=s,A_t=a \right]\\
+    &amp;=\sum_{s&#39;,r}{p}\left( s&#39;,r|s,a \right) \left[ r+\gamma \underset{a&#39;}{\max}q_*\left( s&#39;,a&#39; \right) \right]\\
+\end{aligned}
+\]</span></p>
+<p><strong>Backup diagrams</strong>，图形化可以表示如下：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_3.7_1.png" alt="figure 6">
+<p class="caption">figure 6</p>
+</div>
+<p>通过贝尔曼最优等式，可以解决回收机器人的问题：</p>
+<div class="figure">
+<img src="/images/rl_book/rl_3.7_2.png" alt="figure 7">
+<p class="caption">figure 7</p>
+</div>
+<div class="figure">
+<img src="/images/rl_book/rl_3.7_3.png" alt="figure 8">
+<p class="caption">figure 8</p>
+</div>
+<h4 id="优化和近似">优化和近似</h4>
+<p>得到最优策略需要极大的计算量和内存，需要进行优化和近似估计。</p>
+
+      
+    </div>
+
+    <div>
+    
+      
+<div style="text-align:center;color: #ccc;font-size:14px;">
+------ 本文结束 ------
+</div>
+<br/>
+<div style="border: 1px solid black">
+<div style="margin-left:10px">
+<span style="font-weight:blod">版权声明</span>
+<p style="font-size: 15px;line-height: 30px">
+本文为博主原创，欢迎转载分享，只需注明作者与出处。
+<a href="http://liangxhao.com" style="color:#258FC6">http://liangxhao.com</a>
+</p>
+</div>
+</div>
+
+    
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechat.png" alt="liangxhao WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.png" alt="liangxhao Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Reinforcement-learning-an-introduction/" rel="tag"># Reinforcement learning: an introduction</a>
+          
+            <a href="/tags/增强学习/" rel="tag"># 增强学习</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/18/Chapter-2-Multi-arm-Bandits/" rel="next" title="Chapter 2: Multi-arm Bandits">
+                <i class="fa fa-chevron-left"></i> Chapter 2: Multi-arm Bandits
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/18/Chapter-4-Dynamic-Programming/" rel="prev" title="Chapter 4: Dynamic Programming">
+                Chapter 4: Dynamic Programming <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='//bdimg.share.baidu.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="uyan_frame"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="liangxhao" />
+          <p class="site-author-name" itemprop="name">liangxhao</p>
+           
+              <p class="site-description motion-element" itemprop="description">读书笔记,机器学习,人工智能,深度学习,增强学习</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/lianggreathao" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#代理-环境接口"><span class="nav-number">1.</span> <span class="nav-text">代理-环境接口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#情景性任务与连续性任务"><span class="nav-number">2.</span> <span class="nav-text">情景性任务与连续性任务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#目标与奖励"><span class="nav-number">3.</span> <span class="nav-text">目标与奖励</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#马尔科夫属性"><span class="nav-number">4.</span> <span class="nav-text">马尔科夫属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#马尔科夫决策过程"><span class="nav-number">5.</span> <span class="nav-text">马尔科夫决策过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#值函数"><span class="nav-number">6.</span> <span class="nav-text">值函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#最优值函数"><span class="nav-number">7.</span> <span class="nav-text">最优值函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#优化和近似"><span class="nav-number">8.</span> <span class="nav-text">优化和近似</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liangxhao</span>
+</div>
+
+<div>
+ 鲁ICP备17028501号
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    
+
+    
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2131413"></script>
+      <!-- UY END -->
+    
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.popup').toggle();
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var $input = document.getElementById(search_id);
+          var $resultContent = document.getElementById(content_id);
+          $input.addEventListener('input', function(){
+            var matchcounts = 0;
+            var str='<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length > 1) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var content_index = [];
+                var data_title = data.title.trim().toLowerCase();
+                var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                var data_url = decodeURIComponent(data.url);
+                var index_title = -1;
+                var index_content = -1;
+                var first_occur = -1;
+                // only match artiles with not empty titles and contents
+                if(data_title != '') {
+                  keywords.forEach(function(keyword, i) {
+                    index_title = data_title.indexOf(keyword);
+                    index_content = data_content.indexOf(keyword);
+                    if( index_title >= 0 || index_content >= 0 ){
+                      isMatch = true;
+                      if (i == 0) {
+                        first_occur = index_content;
+                      }
+                    }
+
+                  });
+                }
+                // show search results
+                if (isMatch) {
+                  matchcounts += 1;
+                  str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                  var content = data.content.trim().replace(/<[^>]+>/g,"");
+                  if (first_occur >= 0) {
+                    // cut out 100 characters
+                    var start = first_occur - 20;
+                    var end = first_occur + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if(start == 0){
+                      end = 50;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    var match_content = content.substring(start, end);
+                    // highlight all keywords
+                    keywords.forEach(function(keyword){
+                      var regS = new RegExp(keyword, "gi");
+                      match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                    });
+
+                    str += "<p class=\"search-result\">" + match_content +"...</p>"
+                  }
+                  str += "</li>";
+                }
+              })};
+            str += "</ul>";
+            if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+            if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+            $resultContent.innerHTML = str;
+          });
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("Mc0haSU7SydxhfVvyRc1sNB2-gzGzoHsz", "4qWjMvcerWNq94Y7alHLuWQ9");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+</body>
+</html>
